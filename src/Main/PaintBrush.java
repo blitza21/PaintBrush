@@ -30,7 +30,7 @@ public class PaintBrush extends JFrame {
     private JToggleButton purpleBtn;
     private JToggleButton yellowBtn;
 
-    //Penicl and Eraser references
+    //Pencil and Eraser references
     private Pencil pencil;
     private Eraser eraser;
 
