@@ -4,8 +4,10 @@ import Main.Figures.*;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Stack;
+import java.util.Vector;
 
-public class Application {
+public class AppManager {
     //Constants for the application
     final int FRAME_WIDTH = 1350;
     final int FRAME_HEIGHT = 800;
@@ -42,22 +44,23 @@ public class Application {
     int currentStrokeWidth;
     Color currentColor;
     boolean hasBeenDragged;
-    ArrayList<Drawable> drawables;
+    Stack<Drawable> drawables;
 
-    private static Application ref = null;
-    private Application(){
+
+    private static AppManager ref = null;
+    private AppManager(){
         x1 = x2 = y1 = y2 = startX = startY = finalX = finalY = 0;
         currentPaintMode = PaintMode.LINE;
         currentStrokeWidth = initialStrokeWidth;
         currentColor = Color.BLACK;
         currentPaintStyle = PaintStyle.NORMAL;
         hasBeenDragged = false;
-        drawables = new ArrayList<>();
+        drawables = new Stack<>();
     }
 
-    public static Application create(){
+    public static AppManager create(){
         if (ref == null)
-            ref = new Application();
+            ref = new AppManager();
         return ref;
     }
 

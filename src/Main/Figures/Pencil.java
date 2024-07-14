@@ -1,5 +1,5 @@
 package Main.Figures;
-import Main.Application;
+import Main.AppManager;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -7,10 +7,10 @@ import java.util.ArrayList;
 public class Pencil implements Drawable{
     private Color color;
     private int strokeWidth;
-    private Application.PaintStyle paintStyle;
+    private AppManager.PaintStyle paintStyle;
     private ArrayList<Point> points;
 
-    public Pencil(Color color , int strokeWidth , Application.PaintStyle paintStyle){
+    public Pencil(Color color , int strokeWidth , AppManager.PaintStyle paintStyle){
         points = new ArrayList<>();
         this.color = color;
         this.strokeWidth = strokeWidth;
@@ -24,7 +24,7 @@ public class Pencil implements Drawable{
     @Override
     public void draw(Graphics2D g2D){
         g2D.setColor(color);
-        if (paintStyle == Application.PaintStyle.DOTTED) {
+        if (paintStyle == AppManager.PaintStyle.DOTTED) {
             float[] dashPattern = {3f, 3f}; // 5 pixels on, 5 pixels off
             g2D.setStroke(new BasicStroke(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
         }

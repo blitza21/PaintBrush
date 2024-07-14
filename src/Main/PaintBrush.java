@@ -36,11 +36,11 @@ public class PaintBrush extends JFrame {
     private Pencil pencil;
     private Eraser eraser;
 
-    //Ref to Application class (Singleton)
-    private Application myApp;
+    //Ref to AppManager class (Singleton)
+    private final AppManager myApp;
 
     //Ref to the drawing panel
-    private DrawPanel drawingPanel;
+    private final DrawPanel drawingPanel;
 
 
     //Helper Classes
@@ -59,12 +59,12 @@ public class PaintBrush extends JFrame {
             switch (myApp.currentPaintMode){
                 case PENCIL:
                     pencil = new Pencil(myApp.currentColor , myApp.currentStrokeWidth , myApp.currentPaintStyle);
-                    myApp.drawables.add(pencil);
+                    myApp.drawables.push(pencil);
                     pencil.addPoint(p);
                     break;
                 case ERASER:
                     eraser = new Eraser(myApp.currentStrokeWidth);
-                    myApp.drawables.add(eraser);
+                    myApp.drawables.push(eraser);
                     eraser.addPoint(p);
                     break;
 
@@ -81,20 +81,20 @@ public class PaintBrush extends JFrame {
                 case LINE:
                     if (myApp.hasBeenDragged) {
                         Line l = new Line(myApp.x1, myApp.y1, myApp.x2, myApp.y2, myApp.currentColor, myApp.currentStrokeWidth , myApp.currentPaintStyle);
-                        myApp.drawables.add(l);
+                        myApp.drawables.push(l);
                     }
                     break;
 
                 case RECTANGLE:
                     if (myApp.hasBeenDragged) {
                         Rectangle r = new Rectangle(myApp.startX, myApp.startY, myApp.finalX, myApp.finalY, myApp.currentColor, myApp.currentStrokeWidth,  myApp.currentPaintStyle);
-                        myApp.drawables.add(r);
+                        myApp.drawables.push(r);
                     }
                     break;
                 case OVAL:
                     if (myApp.hasBeenDragged) {
                         Oval o = new Oval(myApp.startX, myApp.startY, myApp.finalX, myApp.finalY, myApp.currentColor, myApp.currentStrokeWidth ,myApp.currentPaintStyle);
-                        myApp.drawables.add(o);
+                        myApp.drawables.push(o);
                     }
                     break;
                 case PENCIL:
@@ -166,15 +166,15 @@ public class PaintBrush extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e){
             if (e.getSource() == lineBtn)
-                myApp.currentPaintMode = Application.PaintMode.LINE;
+                myApp.currentPaintMode = AppManager.PaintMode.LINE;
             else if (e.getSource() == rectBtn)
-                myApp.currentPaintMode = Application.PaintMode.RECTANGLE;
+                myApp.currentPaintMode = AppManager.PaintMode.RECTANGLE;
             else if (e.getSource() == ovalBtn)
-                myApp.currentPaintMode = Application.PaintMode.OVAL;
+                myApp.currentPaintMode = AppManager.PaintMode.OVAL;
             else if (e.getSource() == pencilBtn)
-                myApp.currentPaintMode = Application.PaintMode.PENCIL;
+                myApp.currentPaintMode = AppManager.PaintMode.PENCIL;
              else if (e.getSource() == eraserBtn)
-                myApp.currentPaintMode = Application.PaintMode.ERASER;
+                myApp.currentPaintMode = AppManager.PaintMode.ERASER;
 
         }
     }
@@ -182,15 +182,15 @@ public class PaintBrush extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e){
             if (e.getSource() == clearBtn){
-                Rectangle r = new Rectangle(0 , 0 , getWidth() , getHeight(), Color.WHITE , myApp.currentStrokeWidth, Application.PaintStyle.FILL);
-                myApp.drawables.add(r);
+                Rectangle r = new Rectangle(0 , 0 , getWidth() , getHeight(), Color.WHITE , myApp.currentStrokeWidth, AppManager.PaintStyle.FILL);
+                myApp.drawables.push(r);
             }
             else if (e.getSource() == undoBtn){
                 if (!myApp.drawables.isEmpty())
-                    myApp.drawables.remove(myApp.drawables.size() - 1);
+                    myApp.drawables.pop();
             }
-            Application.PaintMode tmpPaintMode = myApp.currentPaintMode;
-            myApp.currentPaintMode = Application.PaintMode.NONE;
+            AppManager.PaintMode tmpPaintMode = myApp.currentPaintMode;
+            myApp.currentPaintMode = AppManager.PaintMode.NONE;
             drawingPanel.repaint();
             myApp.currentPaintMode = tmpPaintMode;
         }
@@ -199,11 +199,11 @@ public class PaintBrush extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == normalRadioBtn)
-                myApp.currentPaintStyle = Application.PaintStyle.NORMAL;
+                myApp.currentPaintStyle = AppManager.PaintStyle.NORMAL;
             else if (e.getSource() == fillRadioBtn)
-                myApp.currentPaintStyle = Application.PaintStyle.FILL;
+                myApp.currentPaintStyle = AppManager.PaintStyle.FILL;
             else if (e.getSource() == dottedRadioBtn)
-                myApp.currentPaintStyle = Application.PaintStyle.DOTTED;
+                myApp.currentPaintStyle = AppManager.PaintStyle.DOTTED;
         }
     }
 
@@ -238,7 +238,7 @@ public class PaintBrush extends JFrame {
                 drawable.draw(g2D);
 
             g2D.setColor(myApp.currentColor);
-            if (myApp.currentPaintStyle == Application.PaintStyle.DOTTED) {
+            if (myApp.currentPaintStyle == AppManager.PaintStyle.DOTTED) {
                 float[] dashPattern = {5f, 5f}; // 5 pixels on, 5 pixels off
                 g2D.setStroke(new BasicStroke(myApp.currentStrokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
             }
@@ -253,24 +253,24 @@ public class PaintBrush extends JFrame {
                     break;
                 case RECTANGLE:
                     if (myApp.hasBeenDragged)
-                        if (myApp.currentPaintStyle == Application.PaintStyle.FILL)
+                        if (myApp.currentPaintStyle == AppManager.PaintStyle.FILL)
                             g2D.fillRect(myApp.startX, myApp.startY, myApp.finalX - myApp.startX, myApp.finalY - myApp.startY);
                         else
                             g2D.drawRect(myApp.startX, myApp.startY, myApp.finalX - myApp.startX, myApp.finalY - myApp.startY);
                     break;
                 case OVAL:
                     if (myApp.hasBeenDragged)
-                        if (myApp.currentPaintStyle == Application.PaintStyle.FILL)
+                        if (myApp.currentPaintStyle == AppManager.PaintStyle.FILL)
                             g2D.fillOval(myApp.startX, myApp.startY, myApp.finalX - myApp.startX, myApp.finalY - myApp.startY);
                         else
                             g2D.drawOval(myApp.startX, myApp.startY, myApp.finalX - myApp.startX, myApp.finalY - myApp.startY);
                     break;
                 case PENCIL:
-                    g2D.fillRect(myApp.x2 , myApp.y2 , myApp.currentStrokeWidth , myApp.currentStrokeWidth);
+                    g2D.fillRect(myApp.x2 - myApp.currentStrokeWidth/2 , myApp.y2 - myApp.currentStrokeWidth/2 , myApp.currentStrokeWidth , myApp.currentStrokeWidth);
                     break;
                 case ERASER:
                     g2D.setColor(Color.WHITE);
-                    g2D.fillRect(myApp.x2 , myApp.y2 , myApp.currentStrokeWidth , myApp.currentStrokeWidth);
+                    g2D.fillRect(myApp.x2 - myApp.currentStrokeWidth/2 , myApp.y2 - myApp.currentStrokeWidth/2 , myApp.currentStrokeWidth , myApp.currentStrokeWidth);
                     break;
 
             }
@@ -282,7 +282,7 @@ public class PaintBrush extends JFrame {
 
     //Constructor
     public PaintBrush() {
-        myApp = Application.create();
+        myApp = AppManager.create();
         drawingPanel = new DrawPanel();
         initComponents();
     }

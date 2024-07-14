@@ -1,11 +1,11 @@
 package Main.Figures;
 
-import Main.Application;
+import Main.AppManager;
 
 import java.awt.*;
 
 public class Rectangle extends Shape {
-    public Rectangle(int x1, int y1, int x2, int y2, Color color, int strokeWidth, Application.PaintStyle paintStyle) {
+    public Rectangle(int x1, int y1, int x2, int y2, Color color, int strokeWidth, AppManager.PaintStyle paintStyle) {
         super(x1, y1, x2, y2, color, strokeWidth, paintStyle);
     }
 
