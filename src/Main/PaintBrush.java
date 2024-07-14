@@ -15,6 +15,7 @@ public class PaintBrush extends JFrame {
     //Layout Buttons
     private JButton clearBtn;
     private JButton undoBtn;
+    private JButton redoBtn;
     private JToggleButton lineBtn;
     private JToggleButton rectBtn;
     private JToggleButton ovalBtn;
@@ -106,6 +107,12 @@ public class PaintBrush extends JFrame {
             }
             myApp.hasBeenDragged = false;
             drawingPanel.repaint();
+
+            //Deleting the Redo history whenever a new shape is drawn
+            myApp.redoStack.removeAllElements();
+
+            redoBtn.setEnabled(false);
+            undoBtn.setEnabled(true);
         }
 
         @Override
@@ -182,12 +189,22 @@ public class PaintBrush extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e){
             if (e.getSource() == clearBtn){
-                Rectangle r = new Rectangle(0 , 0 , getWidth() , getHeight(), Color.WHITE , myApp.currentStrokeWidth, AppManager.PaintStyle.FILL);
-                myApp.drawables.push(r);
+                myApp.drawables.removeAllElements();
+                myApp.redoStack.removeAllElements();
+                redoBtn.setEnabled(false);
+                undoBtn.setEnabled(false);
             }
             else if (e.getSource() == undoBtn){
-                if (!myApp.drawables.isEmpty())
-                    myApp.drawables.pop();
+                    myApp.redoStack.push(myApp.drawables.pop());
+                    if (myApp.drawables.isEmpty())
+                        undoBtn.setEnabled(false);
+                    redoBtn.setEnabled(true);
+                }
+            else if (e.getSource() == redoBtn) {
+                myApp.drawables.push(myApp.redoStack.pop());
+                if (myApp.redoStack.isEmpty())
+                    redoBtn.setEnabled(false);
+                undoBtn.setEnabled(true);
             }
             AppManager.PaintMode tmpPaintMode = myApp.currentPaintMode;
             myApp.currentPaintMode = AppManager.PaintMode.NONE;
@@ -304,8 +321,14 @@ public class PaintBrush extends JFrame {
         JLabel functionsLabel = new JLabel("Functions:");
         clearBtn = new JButton("Clear");
         clearBtn.addActionListener(functionsListener);
+
         undoBtn = new JButton("Undo");
+        undoBtn.setEnabled(false);
         undoBtn.addActionListener(functionsListener);
+
+        redoBtn = new JButton("Redo");
+        redoBtn.setEnabled(false);
+        redoBtn.addActionListener(functionsListener);
 
 
         //Figures
@@ -408,6 +431,8 @@ public class PaintBrush extends JFrame {
                                 .addComponent(clearBtn)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(undoBtn)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(redoBtn)
                                 .addGap(22)
                                 .addComponent(paintModeLabel)
                                 .addGap(10)
@@ -452,6 +477,7 @@ public class PaintBrush extends JFrame {
                                         .addComponent(functionsLabel)
                                         .addComponent(clearBtn)
                                         .addComponent(undoBtn)
+                                        .addComponent(redoBtn)
                                         .addComponent(paintModeLabel)
                                         .addComponent(lineBtn)
                                         .addComponent(rectBtn)

@@ -9,7 +9,7 @@ import java.util.Vector;
 
 public class AppManager {
     //Constants for the application
-    final int FRAME_WIDTH = 1350;
+    final int FRAME_WIDTH = 1400;
     final int FRAME_HEIGHT = 800;
     final int initialStrokeWidth = 3;
     final Color PURPLE = new Color(76 , 0 , 176);
@@ -45,7 +45,7 @@ public class AppManager {
     Color currentColor;
     boolean hasBeenDragged;
     Stack<Drawable> drawables;
-
+    Stack<Drawable> redoStack;
 
     private static AppManager ref = null;
     private AppManager(){
@@ -56,6 +56,7 @@ public class AppManager {
         currentPaintStyle = PaintStyle.NORMAL;
         hasBeenDragged = false;
         drawables = new Stack<>();
+        redoStack = new Stack<>();
     }
 
     public static AppManager create(){
