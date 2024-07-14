@@ -1,6 +1,8 @@
 package Main;
 import Main.Figures.*;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
@@ -18,17 +20,17 @@ public class PaintBrush extends JFrame {
     private JToggleButton ovalBtn;
     private JToggleButton pencilBtn;
     private JToggleButton eraserBtn;
-    private JCheckBox solidCheckBox;
-    private JCheckBox dottedCheckBox;
-    private JToggleButton smallBtn;
-    private JToggleButton mediumBtn;
-    private JToggleButton largeBtn;
-    private JToggleButton blackBtn;
-    private JToggleButton redBtn;
-    private JToggleButton greenBtn;
-    private JToggleButton blueBtn;
-    private JToggleButton purpleBtn;
-    private JToggleButton yellowBtn;
+    private JRadioButton normalRadioBtn;
+    private JRadioButton fillRadioBtn;
+    private JRadioButton dottedRadioBtn;
+    private JSlider strokeWidthSlider;
+    private JButton blackBtn;
+    private JButton whiteBtn;
+    private JButton redBtn;
+    private JButton greenBtn;
+    private JButton blueBtn;
+    private JButton purpleBtn;
+    private JButton yellowBtn;
 
     //Pencil and Eraser references
     private Pencil pencil;
@@ -56,7 +58,7 @@ public class PaintBrush extends JFrame {
             myApp.y1 = p.y;
             switch (myApp.currentPaintMode){
                 case PENCIL:
-                    pencil = new Pencil(myApp.currentColor , myApp.currentStrokeWidth , myApp.isDotted);
+                    pencil = new Pencil(myApp.currentColor , myApp.currentStrokeWidth , myApp.currentPaintStyle);
                     myApp.drawables.add(pencil);
                     pencil.addPoint(p);
                     break;
@@ -78,20 +80,20 @@ public class PaintBrush extends JFrame {
             switch (myApp.currentPaintMode) {
                 case LINE:
                     if (myApp.hasBeenDragged) {
-                        Line l = new Line(myApp.x1, myApp.y1, myApp.x2, myApp.y2, myApp.currentColor, myApp.currentStrokeWidth , myApp.isDotted);
+                        Line l = new Line(myApp.x1, myApp.y1, myApp.x2, myApp.y2, myApp.currentColor, myApp.currentStrokeWidth , myApp.currentPaintStyle);
                         myApp.drawables.add(l);
                     }
                     break;
 
                 case RECTANGLE:
                     if (myApp.hasBeenDragged) {
-                        Rectangle r = new Rectangle(myApp.startX, myApp.startY, myApp.finalX, myApp.finalY, myApp.currentColor, myApp.currentStrokeWidth,  myApp.isDotted , myApp.isSolid);
+                        Rectangle r = new Rectangle(myApp.startX, myApp.startY, myApp.finalX, myApp.finalY, myApp.currentColor, myApp.currentStrokeWidth,  myApp.currentPaintStyle);
                         myApp.drawables.add(r);
                     }
                     break;
                 case OVAL:
                     if (myApp.hasBeenDragged) {
-                        Oval o = new Oval(myApp.startX, myApp.startY, myApp.finalX, myApp.finalY, myApp.currentColor, myApp.currentStrokeWidth , myApp.isDotted , myApp.isSolid);
+                        Oval o = new Oval(myApp.startX, myApp.startY, myApp.finalX, myApp.finalY, myApp.currentColor, myApp.currentStrokeWidth ,myApp.currentPaintStyle);
                         myApp.drawables.add(o);
                     }
                     break;
@@ -144,52 +146,43 @@ public class PaintBrush extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == yellowBtn)
+            if (e.getSource() == blackBtn)
+                myApp.currentColor = Color.BLACK;
+            else if (e.getSource() == whiteBtn)
+                myApp.currentColor = Color.WHITE;
+            else if (e.getSource() == redBtn)
+                myApp.currentColor = Color.RED;
+            else if (e.getSource() == greenBtn)
+                myApp.currentColor = Color.GREEN;
+            else if (e.getSource() == blueBtn)
+                myApp.currentColor = Color.BLUE;
+            else if (e.getSource() == yellowBtn)
                 myApp.currentColor = Color.YELLOW;
             else if (e.getSource() == purpleBtn)
                 myApp.currentColor = myApp.PURPLE;
-            else if (e.getSource() == blueBtn)
-                myApp.currentColor = Color.BLUE;
-            else if (e.getSource() == greenBtn)
-                myApp.currentColor = Color.GREEN;
-            else if (e.getSource() == redBtn)
-                myApp.currentColor = Color.RED;
-            else if (e.getSource() == blackBtn)
-                myApp.currentColor = Color.BLACK;
         }
     }
     class PaintModeListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e){
-            if (e.getSource() == eraserBtn)
-                myApp.currentPaintMode = Application.PaintMode.ERASER;
-            else if (e.getSource() == pencilBtn)
-                myApp.currentPaintMode = Application.PaintMode.PENCIL;
-            else if (e.getSource() == ovalBtn)
-                myApp.currentPaintMode = Application.PaintMode.OVAL;
+            if (e.getSource() == lineBtn)
+                myApp.currentPaintMode = Application.PaintMode.LINE;
             else if (e.getSource() == rectBtn)
                 myApp.currentPaintMode = Application.PaintMode.RECTANGLE;
-            else if (e.getSource() == lineBtn)
-                myApp.currentPaintMode = Application.PaintMode.LINE;
+            else if (e.getSource() == ovalBtn)
+                myApp.currentPaintMode = Application.PaintMode.OVAL;
+            else if (e.getSource() == pencilBtn)
+                myApp.currentPaintMode = Application.PaintMode.PENCIL;
+             else if (e.getSource() == eraserBtn)
+                myApp.currentPaintMode = Application.PaintMode.ERASER;
 
-        }
-    }
-    class StrokeWidthListener implements ActionListener{
-        @Override
-        public void actionPerformed(ActionEvent e){
-            if (e.getSource() == smallBtn)
-                myApp.currentStrokeWidth = myApp.SMALL_WIDTH;
-            else if (e.getSource() == mediumBtn)
-                myApp.currentStrokeWidth = myApp.MEDIUM_WIDTH;
-            else if (e.getSource() == largeBtn)
-                myApp.currentStrokeWidth = myApp.LARGE_WIDTH;
         }
     }
     class FunctionsListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e){
             if (e.getSource() == clearBtn){
-                Rectangle r = new Rectangle(0 , 0 , getWidth() , getHeight(), Color.WHITE , myApp.currentStrokeWidth, false , true);
+                Rectangle r = new Rectangle(0 , 0 , getWidth() , getHeight(), Color.WHITE , myApp.currentStrokeWidth, Application.PaintStyle.FILL);
                 myApp.drawables.add(r);
             }
             else if (e.getSource() == undoBtn){
@@ -198,11 +191,21 @@ public class PaintBrush extends JFrame {
             }
             Application.PaintMode tmpPaintMode = myApp.currentPaintMode;
             myApp.currentPaintMode = Application.PaintMode.NONE;
-            repaint();
+            drawingPanel.repaint();
             myApp.currentPaintMode = tmpPaintMode;
         }
     }
-
+    class RadioButtonListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == normalRadioBtn)
+                myApp.currentPaintStyle = Application.PaintStyle.NORMAL;
+            else if (e.getSource() == fillRadioBtn)
+                myApp.currentPaintStyle = Application.PaintStyle.FILL;
+            else if (e.getSource() == dottedRadioBtn)
+                myApp.currentPaintStyle = Application.PaintStyle.DOTTED;
+        }
+    }
 
     //This class enables the application to have smoother graphics using the buffered image
     class DrawPanel extends JPanel{
@@ -235,8 +238,7 @@ public class PaintBrush extends JFrame {
                 drawable.draw(g2D);
 
             g2D.setColor(myApp.currentColor);
-
-            if (myApp.isDotted){
+            if (myApp.currentPaintStyle == Application.PaintStyle.DOTTED) {
                 float[] dashPattern = {5f, 5f}; // 5 pixels on, 5 pixels off
                 g2D.setStroke(new BasicStroke(myApp.currentStrokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
             }
@@ -251,14 +253,14 @@ public class PaintBrush extends JFrame {
                     break;
                 case RECTANGLE:
                     if (myApp.hasBeenDragged)
-                        if (myApp.isSolid)
+                        if (myApp.currentPaintStyle == Application.PaintStyle.FILL)
                             g2D.fillRect(myApp.startX, myApp.startY, myApp.finalX - myApp.startX, myApp.finalY - myApp.startY);
                         else
                             g2D.drawRect(myApp.startX, myApp.startY, myApp.finalX - myApp.startX, myApp.finalY - myApp.startY);
                     break;
                 case OVAL:
                     if (myApp.hasBeenDragged)
-                        if (myApp.isSolid)
+                        if (myApp.currentPaintStyle == Application.PaintStyle.FILL)
                             g2D.fillOval(myApp.startX, myApp.startY, myApp.finalX - myApp.startX, myApp.finalY - myApp.startY);
                         else
                             g2D.drawOval(myApp.startX, myApp.startY, myApp.finalX - myApp.startX, myApp.finalY - myApp.startY);
@@ -294,17 +296,12 @@ public class PaintBrush extends JFrame {
 
         ColorListener colorListener = new ColorListener();
         PaintModeListener paintModeListener = new PaintModeListener();
-        StrokeWidthListener strokeWidthListener = new StrokeWidthListener();
         FunctionsListener functionsListener = new FunctionsListener();
-
-        //Labels
-        JLabel functionsLabel = new JLabel("Functions:");
-        JLabel paintModeLabel = new JLabel("Paint Mode:");
-        JLabel sizeLabel = new JLabel("Size:");
-        JLabel colorsLabel = new JLabel("Colors:");
+        RadioButtonListener radioButtonListener = new RadioButtonListener();
 
 
         //Functions
+        JLabel functionsLabel = new JLabel("Functions:");
         clearBtn = new JButton("Clear");
         clearBtn.addActionListener(functionsListener);
         undoBtn = new JButton("Undo");
@@ -312,6 +309,7 @@ public class PaintBrush extends JFrame {
 
 
         //Figures
+        JLabel paintModeLabel = new JLabel("Paint Mode:");
         lineBtn = new JToggleButton("Line");
         lineBtn.addActionListener(paintModeListener);
         lineBtn.setSelected(true);
@@ -336,87 +334,63 @@ public class PaintBrush extends JFrame {
         figuresGroup.add(eraserBtn);
 
 
-        //CheckBoxes
-        solidCheckBox = new JCheckBox("Solid");
-        solidCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED)
-                    myApp.isSolid = true;
-                else if (e.getStateChange() == ItemEvent.DESELECTED)
-                    myApp.isSolid = false;
-            }
-        });
+        //Radio Buttons
+        JLabel styleLabel = new JLabel("Style:");
+        normalRadioBtn = new JRadioButton("Normal");
+        normalRadioBtn.addActionListener(radioButtonListener);
+        normalRadioBtn.setSelected(true);
 
-        dottedCheckBox = new JCheckBox("Dotted");
-        dottedCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED)
-                    myApp.isDotted = true;
-                else if (e.getStateChange() == ItemEvent.DESELECTED)
-                    myApp.isDotted = false;
-            }
-        });
+        fillRadioBtn = new JRadioButton("Fill");
+        fillRadioBtn.addActionListener(radioButtonListener);
 
+        dottedRadioBtn = new JRadioButton("Dotted");
+        dottedRadioBtn.addActionListener(radioButtonListener);
+
+        ButtonGroup radioButtonsGroup = new ButtonGroup();
+        radioButtonsGroup.add(normalRadioBtn);
+        radioButtonsGroup.add(fillRadioBtn);
+        radioButtonsGroup.add(dottedRadioBtn);
 
         //Stroke Width buttons
-        smallBtn = new JToggleButton("Small");
-        smallBtn.addActionListener(strokeWidthListener);
-
-
-        mediumBtn = new JToggleButton("Medium");
-        mediumBtn.addActionListener(strokeWidthListener);
-        mediumBtn.setSelected(true);
-
-        largeBtn = new JToggleButton("Large");
-        largeBtn.addActionListener(strokeWidthListener);
-
-
-        ButtonGroup sizeGroup = new ButtonGroup();
-        sizeGroup.add(smallBtn);
-        sizeGroup.add(mediumBtn);
-        sizeGroup.add(largeBtn);
+        strokeWidthSlider = new JSlider(1,20,myApp.initialStrokeWidth);
+        JLabel sliderLabel = new JLabel("Size:  " + strokeWidthSlider.getValue());
+        strokeWidthSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                sliderLabel.setText("Size:  " + strokeWidthSlider.getValue());
+                myApp.currentStrokeWidth = strokeWidthSlider.getValue();
+            }
+        });
 
         //Colors
-        blackBtn = new JToggleButton("Black");
+        JLabel colorsLabel = new JLabel("Colors:");
+        blackBtn = new JButton();
         blackBtn.setBackground(Color.BLACK);
-        blackBtn.setForeground(Color.WHITE);
         blackBtn.addActionListener(colorListener);
-        blackBtn.setSelected(true);
 
-        redBtn = new JToggleButton("Red");
+        whiteBtn = new JButton();
+        whiteBtn.setBackground(Color.WHITE);
+        whiteBtn.addActionListener(colorListener);
+
+        redBtn = new JButton();
         redBtn.setBackground(Color.RED);
-        redBtn.setForeground(Color.WHITE);
         redBtn.addActionListener(colorListener);
 
-        greenBtn = new JToggleButton("Green");
+        greenBtn = new JButton();
         greenBtn.setBackground(Color.GREEN);
-        greenBtn.setForeground(Color.BLACK);
         greenBtn.addActionListener(colorListener);
 
-        blueBtn = new JToggleButton("Blue");
+        blueBtn = new JButton();
         blueBtn.setBackground(Color.BLUE);
-        blueBtn.setForeground(Color.WHITE);
         blueBtn.addActionListener(colorListener);
 
-        purpleBtn = new JToggleButton("Purple");
+        purpleBtn = new JButton();
         purpleBtn.setBackground(myApp.PURPLE);
-        purpleBtn.setForeground(Color.WHITE);
         purpleBtn.addActionListener(colorListener);
 
-        yellowBtn = new JToggleButton("Yellow");
+        yellowBtn = new JButton();
         yellowBtn.setBackground(Color.YELLOW);
-        yellowBtn.setForeground(Color.BLACK);
         yellowBtn.addActionListener(colorListener);
-
-        ButtonGroup colorsGroup = new ButtonGroup();
-        colorsGroup.add(blackBtn);
-        colorsGroup.add(redBtn);
-        colorsGroup.add(greenBtn);
-        colorsGroup.add(blueBtn);
-        colorsGroup.add(purpleBtn);
-        colorsGroup.add(yellowBtn);
 
         //Layout
         getContentPane().setBackground(Color.WHITE);
@@ -428,15 +402,15 @@ public class PaintBrush extends JFrame {
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
+                                .addGap(10)
                                 .addComponent(functionsLabel)
-                                .addGap(10, 10, 10)
+                                .addGap(10)
                                 .addComponent(clearBtn)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(undoBtn)
-                                .addGap(22, 22, 22)
+                                .addGap(22)
                                 .addComponent(paintModeLabel)
-                                .addGap(10, 10, 10)
+                                .addGap(10)
                                 .addComponent(lineBtn)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(rectBtn)
@@ -446,32 +420,28 @@ public class PaintBrush extends JFrame {
                                 .addComponent(pencilBtn)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(eraserBtn)
-                                .addGap(22, 22, 22)
-                                .addComponent(solidCheckBox)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(dottedCheckBox)
-                                .addGap(22, 22, 22)
-                                .addComponent(sizeLabel)
-                                .addGap(10, 10, 10)
-                                .addComponent(smallBtn)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(mediumBtn)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(largeBtn)
-                                .addGap(22, 22, 22)
+                                .addGap(22)
+                                .addComponent(styleLabel)
+                                .addGap(10)
+                                .addComponent(normalRadioBtn)
+                                .addGap(5)
+                                .addComponent(fillRadioBtn)
+                                .addGap(5)
+                                .addComponent(dottedRadioBtn)
+                                .addGap(22)
+                                .addComponent(sliderLabel)
+                                .addGap(10)
+                                .addComponent(strokeWidthSlider, 120,120,120)
+                                .addGap(22)
                                 .addComponent(colorsLabel)
-                                .addGap(10, 10, 10)
-                                .addComponent(blackBtn)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(redBtn)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(greenBtn)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(blueBtn)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(purpleBtn)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(yellowBtn))
+                                .addGap(10)
+                                .addComponent(blackBtn, 25 ,  25, 25)
+                                .addComponent(whiteBtn, 25 ,  25, 25)
+                                .addComponent(redBtn, 25 ,  25, 25)
+                                .addComponent(greenBtn, 25 ,  25, 25)
+                                .addComponent(blueBtn, 25 ,  25, 25)
+                                .addComponent(purpleBtn, 25 ,  25, 25)
+                                .addComponent(yellowBtn, 25 ,  25, 25))
                         .addComponent(drawingPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -479,30 +449,31 @@ public class PaintBrush extends JFrame {
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(blueBtn)
-                                        .addComponent(greenBtn)
-                                        .addComponent(redBtn)
-                                        .addComponent(blackBtn)
-                                        .addComponent(purpleBtn)
-                                        .addComponent(yellowBtn)
-                                        .addComponent(eraserBtn)
-                                        .addComponent(pencilBtn)
-                                        .addComponent(ovalBtn)
-                                        .addComponent(rectBtn)
-                                        .addComponent(lineBtn)
-                                        .addComponent(dottedCheckBox)
-                                        .addComponent(solidCheckBox)
+                                        .addComponent(functionsLabel)
                                         .addComponent(clearBtn)
                                         .addComponent(undoBtn)
-                                        .addComponent(functionsLabel)
                                         .addComponent(paintModeLabel)
+                                        .addComponent(lineBtn)
+                                        .addComponent(rectBtn)
+                                        .addComponent(ovalBtn)
+                                        .addComponent(pencilBtn)
+                                        .addComponent(eraserBtn)
+                                        .addComponent(styleLabel)
+                                        .addComponent(normalRadioBtn)
+                                        .addComponent(fillRadioBtn)
+                                        .addComponent(dottedRadioBtn)
+                                        .addComponent(sliderLabel)
+                                        .addComponent(strokeWidthSlider, 30, 30, 30)
                                         .addComponent(colorsLabel)
-                                        .addComponent(sizeLabel)
-                                        .addComponent(smallBtn)
-                                        .addComponent(mediumBtn)
-                                        .addComponent(largeBtn))
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(drawingPanel, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
+                                        .addComponent(blackBtn, 25 ,  25, 25)
+                                        .addComponent(whiteBtn, 25 ,  25, 25)
+                                        .addComponent(redBtn, 25 ,  25, 25)
+                                        .addComponent(greenBtn, 25 ,  25, 25)
+                                        .addComponent(blueBtn, 25 ,  25, 25)
+                                        .addComponent(purpleBtn, 25 ,  25, 25)
+                                        .addComponent(yellowBtn, 25 ,  25, 25))
+                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(drawingPanel, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
         );
         setLocationRelativeTo(null);
     }
