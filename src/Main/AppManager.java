@@ -3,15 +3,15 @@ package Main;
 import Main.Figures.*;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Stack;
-import java.util.Vector;
 
 public class AppManager {
     //Constants for the application
     final int FRAME_WIDTH = 1400;
     final int FRAME_HEIGHT = 800;
-    final int initialStrokeWidth = 3;
+    final int minStrokeWidth = 2;
+    final int initialStrokeWidth = 5;
+    final int maxStrokeWidth = 50;
     final Color PURPLE = new Color(76 , 0 , 176);
 
     //Enum for the paint mode

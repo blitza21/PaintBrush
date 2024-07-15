@@ -33,7 +33,7 @@ public class Pencil implements Drawable{
 
         for (int i = 0; i < points.size() - 1; i++)
         {
-            g2D.drawLine(points.get(i).x , points.get(i).y , points.get(i+1).x , points.get(i+1).y );
+            g2D.fillOval((points.get(i).x)-strokeWidth/2 , (points.get(i).y)-strokeWidth/2 , strokeWidth, strokeWidth);
         }
     }
 }

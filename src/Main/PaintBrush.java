@@ -283,11 +283,12 @@ public class PaintBrush extends JFrame {
                             g2D.drawOval(myApp.startX, myApp.startY, myApp.finalX - myApp.startX, myApp.finalY - myApp.startY);
                     break;
                 case PENCIL:
-                    g2D.fillRect(myApp.x2 - myApp.currentStrokeWidth/2 , myApp.y2 - myApp.currentStrokeWidth/2 , myApp.currentStrokeWidth , myApp.currentStrokeWidth);
+                    if (myApp.y2 > 15)
+                        g2D.fillOval(myApp.x2 - myApp.currentStrokeWidth/2 , myApp.y2 - myApp.currentStrokeWidth/2 , myApp.currentStrokeWidth , myApp.currentStrokeWidth);
                     break;
                 case ERASER:
                     g2D.setColor(Color.WHITE);
-                    g2D.fillRect(myApp.x2 - myApp.currentStrokeWidth/2 , myApp.y2 - myApp.currentStrokeWidth/2 , myApp.currentStrokeWidth , myApp.currentStrokeWidth);
+                    g2D.fillOval(myApp.x2 - myApp.currentStrokeWidth/2 , myApp.y2 - myApp.currentStrokeWidth/2 , myApp.currentStrokeWidth , myApp.currentStrokeWidth);
                     break;
 
             }
@@ -375,7 +376,10 @@ public class PaintBrush extends JFrame {
         radioButtonsGroup.add(dottedRadioBtn);
 
         //Stroke Width buttons
-        strokeWidthSlider = new JSlider(1,20,myApp.initialStrokeWidth);
+        strokeWidthSlider = new JSlider();
+        strokeWidthSlider.setMinimum(myApp.minStrokeWidth);
+        strokeWidthSlider.setMaximum(myApp.maxStrokeWidth);
+        strokeWidthSlider.setValue(myApp.initialStrokeWidth);
         JLabel sliderLabel = new JLabel("Size:  " + strokeWidthSlider.getValue());
         strokeWidthSlider.addChangeListener(new ChangeListener() {
             @Override
